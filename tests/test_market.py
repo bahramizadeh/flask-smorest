@@ -1,8 +1,7 @@
-import requests
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-from resources.market import MarketsSummaries, MarketSymbol, blp
-from app import app
+from unittest.mock import Mock, patch
+from resources.market import MarketsSummaries, MarketSymbol
+
 
         
 def mocked_result():

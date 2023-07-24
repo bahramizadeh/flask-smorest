@@ -24,6 +24,10 @@ class UserRegister(MethodView):
     
     @blp.arguments(UserSchema)
     def post(self, user_info):
+        return self._post(user_info)
+        
+        
+    def _post(self, user_info):
         
         if UserModel.query.filter(UserModel.username==user_info["username"]).first():
             abort(409, message="A user with that username already exists.")
