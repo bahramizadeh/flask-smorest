@@ -6,3 +6,6 @@ marshmallow
 flask_JWT_extended
 flask_sqlalchemy
 passlib
+pytest
+pytest-mock
+pytest-cov

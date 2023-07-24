@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from db import db
 
 from resources.user import blp as UserBluprint
 from resources.market import blp as MarketBluprint
+from blocklist import BLOCKLIST
 
 app = Flask(__name__)
 
@@ -27,37 +28,66 @@ jwt = JWTManager(app)
 
 api = Api(app)
 
+
+@jwt.additional_claims_loader
+def add_claims_to_jwt(indetity):
+    if indetity == 1:
+        return {"is_admin": True}
+    return {"is_admin": False}
+
+
+@jwt.revoked_token_loader
+def check_if_token_in_blocklist(jwt_header, jwt_payload):
+    return jwt_payload['jti'] in BLOCKLIST
+
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return (
+        jsonify({"message": "The token has expired.", "error": "token_expired"}),
+        401,
+    )
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return (
+        jsonify(
+            {"message": "Signature verification failed.", "error": "invalid_token"}
+        ),
+        401,
+    )
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return (
+        jsonify(
+            {
+                "description": "Request does not contain an access token.",
+                "error": "authorization_required",
+            }
+        ),
+        401,
+    )
+
+
+@jwt.needs_fresh_token_loader
+def token_not_fresh_callback(jwt_header, jwt_payload):
+    return (
+        jsonify(
+            {
+                "description": "The token is not fresh.",
+                "error": "fresh_token_required",
+            }
+        ),
+        401,
+    )
+    
+    
+
 with app.app_context():
     db.create_all()
 
-# markets_summaries = Blueprint("markets", "__name__", description="Get Markets summaries")
-# market_symbol_summary = Blueprint("marketSymbol", "__name__", description="Get Market summary based on marketSymbol")
-
-# ## Get Markets summaries 
-# @markets_summaries.route("/markets/summaries")
-# @markets_summaries.response(200, MarketSchema(many=True))
-# @jwt_required()
-# def get_all_markets_summaries():
-    
-#     try:
-#         response = requests.get("https://api.bittrex.com/v3/markets/summaries")
-#         return response.json()
-#     except requests.Timeout:
-#         abort(404, message="Page not found.")
-
-
-# ## Get Market summary based on marketSymbol
-# @market_symbol_summary.route("/markets/<string:marketSymbol>/summary")
-# @market_symbol_summary.response(200, MarketSchema)
-# @jwt_required()
-# def get_market_sammary(marketSymbol):
-#     try:
-#         response = requests.get(f"https://api.bittrex.com/v3/markets/{marketSymbol}/summary")
-#         return response.json()
-#     except requests.Timeout:
-#         abort(404, message="Market symbol not found.")
-        
-        
 
 
 api.register_blueprint(UserBluprint)        
