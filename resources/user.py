@@ -49,9 +49,14 @@ class User(MethodView):
     
     @blp.response(200, UserSchema)
     def get(self, user_id):
-        
+        return self._get(user_id)
+    
+    
+    def _get(self, user_id):
         user = UserModel.query.get_or_404(user_id)
         return user
+    
+    
     
     @jwt_required(refresh=True)
     def delete(self, user_id):

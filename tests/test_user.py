@@ -29,5 +29,19 @@ def test_user_register_abort(mock_um, db):
     user_register = UserRegister()
     with pytest.raises(Exception):
         user_register._post(user_info)
+        
 
+    
+@patch("resources.user.UserModel")
+def test_user(mock_um):
+    user_id = 1
+    user_info = {
+        "username": "admin",
+        "password": "testpassword"
+    }
+    user = UserModel(**user_info)
+    mock_um.query.get_or_404(user_id).return_value = user
+    user_instance = User()
+    user_instance._get(user_id)
+    
 
