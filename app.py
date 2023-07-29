@@ -1,13 +1,17 @@
+import secrets
 from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
+
 from db import db
+from redis_cache import cache
 
 from resources.user import blp as UserBluprint
 from resources.market import blp as MarketBluprint
 from blocklist import BLOCKLIST
 
 app = Flask(__name__)
+
 
 app.config["PROPAGATE_EXCEPTIONS"] = True
 app.config["API_TITLE"] = "MARKET SYMMARY REST API"
@@ -16,13 +20,19 @@ app.config["OPENAPI_VERSION"] = "3.0.3"
 app.config["OPENAPI_URL_PREFIX"] = "/"
 app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
 app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-app.config["JWT_SECRET_KEY"] = "Maryam"
-# app.config["JWT_SECRET_KEY"] = str(secrets.SystemRandom().getrandbits(128))
+# app.config["JWT_SECRET_KEY"] = "Maryam"
+app.config["JWT_SECRET_KEY"] = str(secrets.SystemRandom().getrandbits(128))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["CACHE_TYPE"]="redis"
+app.config["CACHE_REDIS_HOST"]="redis"
+app.config["CACHE_REDIS_PORT"]="6379"
+app.config["CACHE_REDIS_DB"]="0"
+app.config["CACHE_REDIS_URL"]="redis://127.0.0.1:6379/0"
+app.config["CACHE_DEFAULT_TIMEOUT"]="500"
 
 db.init_app(app)
-
+cache.init_app(app)
 
 jwt = JWTManager(app) 
 

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # app:
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - redis
+  #   environment:
+  #     - FLASK_ENV=development
+  #     - FLASK_APP=app.py
+  #   volumes:
+  #     - redis_data:/data
+
+  redis:
+    image: redis
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+
+

@@ -1,14 +1,16 @@
 import requests
 from flask.views import MethodView
+# from flask_caching import Cache
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required, get_jwt
 
 from schemas import MarketSchema
+from redis_cache import cache
 
 
 
 blp = Blueprint("Markets","markets",description="Operations on markets")
-
+# cache = Cache()
 
 
 @blp.route("/markets/summaries")
@@ -17,6 +19,7 @@ class MarketsSummaries(MethodView):
     ## Get Markets summaries 
     @jwt_required()
     @blp.response(200, MarketSchema(many=True))
+    @cache.cached(timeout=100, query_string=True)
     def get(self):
         return self._get()
 
@@ -40,6 +43,7 @@ class MarketSymbol(MethodView):
     ## Get Market summary based on marketSymbol
     @jwt_required()
     @blp.response(200, MarketSchema)
+    @cache.cached(timeout=50, query_string=True)
     def get(self, marketSymbol):
         return self._get(marketSymbol)
             

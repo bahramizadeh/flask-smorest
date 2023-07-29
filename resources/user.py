@@ -60,6 +60,10 @@ class User(MethodView):
     
     @jwt_required(refresh=True)
     def delete(self, user_id):
+        return self._delete(user_id)
+        
+    
+    def _delete(self, user_id):
         
         jwt = get_jwt()
         if not jwt.get("is_admin"):
@@ -70,15 +74,20 @@ class User(MethodView):
         db.session.commit()
         
         return {"message": "User deleted."}, 201
+    
         
 
 
 @blp.route("/login")        
-class login(MethodView):
+class Login(MethodView):
     
     @blp.arguments(UserSchema)
     def post(self, user_info):
-    
+        return self._post(user_info)
+        
+        
+        
+    def _post(self, user_info):
         user = UserModel.query.filter(
             UserModel.username == user_info["username"]
         ).first()
@@ -94,31 +103,35 @@ class login(MethodView):
         
         
         
-    @blp.route("/logout")
-    class UserLogout(MethodView):
+@blp.route("/logout")
+class UserLogout(MethodView):
+    
+    @jwt_required()
+    def post(self):
+        return self._post()
         
-        @jwt_required()
-        def post(self):
-            
-            jti = get_jwt()['jti']
-            BLOCKLIST.add(jti)
-            
-            print(jti, "this is jti in logout processing")
-            print(BLOCKLIST, "this is blocklist set after user logout")
-            return {"message": "successfully logged out."}, 200
+    
+    def _post(self):
+        jti = get_jwt()['jti']
+        BLOCKLIST.add(jti)
+        
+        return {"message": "successfully logged out."}, 200
+
     
     
-    @blp.route("/refresh")
-    class TokenRefresh(MethodView):
+@blp.route("/refresh")
+class TokenRefresh(MethodView):
+    
+    @jwt_required(refresh=True)
+    def post(self):
         
-        @jwt_required(refresh=True)
-        def post(self):
-            
-            current_user = get_jwt_identity()
-            new_token = create_access_token(identity=current_user, fresh=False)
-            jti = get_jwt()['jti']
-            BLOCKLIST.add(jti)
-            
-            print(jti, "this is jti in tocken refreshing processing")
-            print(BLOCKLIST, "this is blocklist set after token refreshing")
-            return {"access_token": new_token}, 200
+        return self._post()
+    
+    
+    def _post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+        jti = get_jwt()['jti']
+        BLOCKLIST.add(jti)
+        
+        return {"access_token": new_token}, 200
