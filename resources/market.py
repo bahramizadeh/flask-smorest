@@ -1,6 +1,5 @@
 import requests
 from flask.views import MethodView
-# from flask_caching import Cache
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required, get_jwt
 
@@ -8,10 +7,7 @@ from schemas import MarketSchema
 from redis_cache import cache
 
 
-
 blp = Blueprint("Markets","markets",description="Operations on markets")
-# cache = Cache()
-
 
 @blp.route("/markets/summaries")
 class MarketsSummaries(MethodView):

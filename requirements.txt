@@ -11,3 +11,5 @@ pytest-mock
 pytest-cov
 redis
 flask_caching
+pylint
+autopep8

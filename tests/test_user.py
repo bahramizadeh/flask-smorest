@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from resources.user import UserRegister, User, Login, UserLogout, TokenRefresh
 from models.user import UserModel
 

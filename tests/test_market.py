@@ -36,32 +36,32 @@ def test_market_symbol_exception(mock_req):
     symbol = "LTC-BTC"
     mock_req.get.side_effect = Exception
     with pytest.raises(Exception):
-        response = market_symbol._get(symbol)
+        market_symbol._get(symbol)
     
     
     
 def mocked_result_for_markets_summaries():
     mocked_response = Mock()
     mocked_response.json.return_value = [
-                                            {
-                                                "high": 7.45e-06,
-                                                "low": 7.45e-06,
-                                                "percentChange": 0.0,
-                                                "quoteVolume": 0.0,
-                                                "symbol": "1ECO-BTC",
-                                                "updatedAt": "2023-07-23T14:21:01.447Z",
-                                                "volume": 0.0
-                                            },
-                                            {
-                                                "high": 0.28531,
-                                                "low": 0.28194,
-                                                "percentChange": -0.53,
-                                                "quoteVolume": 142.72875704,
-                                                "symbol": "1ECO-USDT",
-                                                "updatedAt": "2023-07-23T14:55:02.203Z",
-                                                "volume": 503.513
-                                            }
-                                        ]
+        {
+            "high": 7.45e-06,
+            "low": 7.45e-06,
+            "percentChange": 0.0,
+            "quoteVolume": 0.0,
+            "symbol": "1ECO-BTC",
+            "updatedAt": "2023-07-23T14:21:01.447Z",
+            "volume": 0.0
+        },
+        {
+            "high": 0.28531,
+            "low": 0.28194,
+            "percentChange": -0.53,
+            "quoteVolume": 142.72875704,
+            "symbol": "1ECO-USDT",
+            "updatedAt": "2023-07-23T14:55:02.203Z",
+            "volume": 503.513
+        }
+    ]
     return mocked_response
 
     
@@ -105,7 +105,7 @@ def test_markets_summaries_not_admin(mock_req, mock_get_jwt):
     markets_summeries = MarketsSummaries()
     mock_req.get.side_effect = Exception
     with pytest.raises(Exception):
-        response = markets_summeries._get()
+        markets_summeries._get()
 
     
 @patch("resources.market.get_jwt")
@@ -116,4 +116,4 @@ def test_markets_summaries_exception(mock_req, mock_get_jwt):
     mock_get_jwt.return_value = {"is_admin": True}
     mock_req.get.side_effect = Exception
     with pytest.raises(Exception):
-        response = markets_summeries._get()
+        markets_summeries._get()
