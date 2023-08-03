@@ -1,5 +1,4 @@
 """
-    Blocklist is a set which is used to keep the jit of users that got logout
-    to show that theirthe expired access tokens. 
+    Blocklist is a set which is used to keep the revoked jit of users' access token that got logout.
 """
 BLOCKLIST = set()
